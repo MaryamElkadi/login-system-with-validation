@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+    <link rel="stylesheet" href="./Assets/css/hello.css">
+    <link rel="stylesheet" href="./Assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./Assets/css/all.min.css">
+    <style>
+        .welcome-container {
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            margin: 2rem auto;
+            padding: 1.5rem;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .user-details {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+        .user-info {
+            text-align: left;
+            display: inline-block;
+            margin: 0 auto;
+        }
+        .user-details p {
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+        .detail-label {
+            font-weight: bold;
+            display: inline-block;
+            min-width: 100px;
+        }
+        .btn-logout {
+            width: 100%;
+            max-width: 200px;
+            padding: 10px;
+            border-radius: 50px;
+            margin: 1rem auto;
+            display: block;
+        }
+        @media (max-width: 576px) {
+            .welcome-container {
+                padding: 1.25rem;
+                margin: 1rem auto;
+            }
+            .user-details {
+                padding: 1rem;
+            }
+            .user-details p {
+                font-size: 0.95rem;
+            }
+            .detail-label {
+                min-width: 80px;
+            }
+            h1 {
+                font-size: 1.75rem;
+            }
+            h3 {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="d-flex align-items-center min-vh-100 py-3">
+        <section class="w-100">
+            <div class="welcome-container">
+                <h1 class="text-center mb-4">Welcome Home</h1>
+                
+                <!-- User Information Section -->
+                <div class="user-details" id="userDetails">
+                    <h3 class="text-center mb-3">Your Account Information</h3>
+                    <div class="user-info">
+                        <p><span class="detail-label">Username:</span> <span id="userName"></span></p>
+                        <p><span class="detail-label">Email:</span> <span id="userEmail"></span></p>
+                        <p><span class="detail-label">Status:</span> <span class="text-success">Active</span></p>
+                        <p><span class="detail-label">Joined:</span> <span id="joinDate"></span></p>
+                    </div>
+                </div>
+                
+                <a href="./index.html" class="btn btn-primary btn-logout" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Get user data from localStorage
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            
+            if (currentUser) {
+                // Display user information
+                document.getElementById('userName').textContent = currentUser.username || 'Not provided';
+                document.getElementById('userEmail').textContent = currentUser.email || 'Not provided';
+                
+                // Format registration date if available, otherwise use current date
+                const joinDate = currentUser.registeredAt ? new Date(currentUser.registeredAt) : new Date();
+                document.getElementById('joinDate').textContent = joinDate.toLocaleDateString();
+                
+                // Show the user details section
+                document.getElementById('userDetails').style.display = 'block';
+            } else {
+                // No user found - redirect to login after 2 seconds
+                document.getElementById('userDetails').innerHTML = `
+                    <div class="alert alert-warning text-center">
+                        You need to login first. Redirecting...
+                    </div>
+                `;
+                setTimeout(() => {
+                    window.location.href = './index.html';
+                }, 2000);
+            }
+            
+            // Clear user data on logout
+            document.getElementById('logoutBtn').addEventListener('click', function() {
+                localStorage.removeItem('currentUser');
+            });
+        });
+    </script>
+</body>
+</html>

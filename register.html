@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration</title>
+    <link rel="stylesheet" href="./Assets/css/all.min.css">
+    <link rel="stylesheet" href="./Assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./Assets/css/style.css">
+    <style>
+        .error-message {
+            color: red;
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+            display: none;
+            width: 100%;
+            padding-left: 0.5rem;
+        }
+        .registration-container {
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            margin: 2rem auto;
+            padding: 1.5rem;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ced4da;
+            border-radius: 50px;
+            margin: 0.5rem 0;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-register {
+            width: 80%;
+            padding: 12px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 500;
+            margin: 1rem 0;
+        }
+        .terms-checkbox {
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        @media (max-width: 576px) {
+            .registration-container {
+                padding: 1.25rem;
+                margin: 1rem auto;
+            }
+            .form-input {
+                padding: 10px 12px;
+            }
+            h1 {
+                font-size: 1.5rem;
+                margin-top: 1rem !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="d-flex align-items-center min-vh-100 py-3">
+        <section class="w-100">
+            <div class="registration-container">
+                <h1 class="text-center h2 mt-3 mb-4">Registration</h1>
+                <form class="d-flex flex-column justify-content-center align-items-center" id="registerForm">
+                    <input type="text" placeholder="Name" class="form-input" id="username">
+                    <div id="usernameError" class="error-message"></div>
+                    
+                    <input type="text" placeholder="E-mail" class="form-input" id="email">
+                    <div id="emailError" class="error-message"></div>
+                    
+                    <input type="password" placeholder="Password" class="form-input" id="password">
+                    <div id="passwordError" class="error-message"></div>
+                    
+                    <div class="terms-checkbox d-flex align-items-center">
+                        <input type="checkbox" name="terms" id="termsCheckbox" class="me-2">
+                        <label for="termsCheckbox">I agree to the terms & conditions</label>
+                    </div>
+                    <div id="termsError" class="error-message"></div>
+                    
+                    <button class="btn btn-primary btn-register" type="submit">Register</button>
+                    
+                    <p class="text-center mt-2">Already Have an Account? <a href="./index.html">Login</a></p>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="./Assets/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Form validation schema
+            const validationSchema = {
+                username: value => {
+                    if (!value) return 'Username is required';
+                    if (value.length < 3) return 'Username must be at least 3 characters';
+                    return null;
+                },
+                email: value => {
+                    if (!value) return 'Email is required';
+                    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Invalid email address';
+                    return null;
+                },
+                password: value => {
+                    if (!value) return 'Password is required';
+                    if (value.length < 6) return 'Password must be at least 6 characters';
+                    if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/.test(value)) {
+                        return 'Password must contain uppercase, lowercase, number, and special character';
+                    }
+                    return null;
+                },
+                terms: value => {
+                    if (!value) return 'You must accept the terms';
+                    return null;
+                }
+            };
+
+            // Form elements
+            const form = document.getElementById('registerForm');
+            const usernameInput = document.getElementById('username');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const termsCheckbox = document.getElementById('termsCheckbox');
+
+            // Real-time validation
+            [usernameInput, emailInput, passwordInput].forEach(input => {
+                input.addEventListener('input', function() {
+                    validateField(this.id, this.value);
+                });
+            });
+
+            termsCheckbox.addEventListener('change', function() {
+                validateField('terms', this.checked);
+            });
+
+            function validateField(fieldName, value) {
+                let errorElement = document.getElementById(`${fieldName}Error`);
+                const error = validationSchema[fieldName](value);
+                
+                if (error) {
+                    errorElement.textContent = error;
+                    errorElement.style.display = 'block';
+                } else {
+                    errorElement.style.display = 'none';
+                }
+            }
+
+            // Form submission
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Validate all fields
+                const usernameError = validationSchema.username(usernameInput.value);
+                const emailError = validationSchema.email(emailInput.value);
+                const passwordError = validationSchema.password(passwordInput.value);
+                const termsError = validationSchema.terms(termsCheckbox.checked);
+
+                // Show errors if any
+                if (usernameError) {
+                    document.getElementById('usernameError').textContent = usernameError;
+                    document.getElementById('usernameError').style.display = 'block';
+                }
+                if (emailError) {
+                    document.getElementById('emailError').textContent = emailError;
+                    document.getElementById('emailError').style.display = 'block';
+                }
+                if (passwordError) {
+                    document.getElementById('passwordError').textContent = passwordError;
+                    document.getElementById('passwordError').style.display = 'block';
+                }
+                if (termsError) {
+                    document.getElementById('termsError').textContent = termsError;
+                    document.getElementById('termsError').style.display = 'block';
+                }
+
+                // If no errors, proceed with registration
+                if (!usernameError && !emailError && !passwordError && !termsError) {
+                    registerUser();
+                }
+            });
+
+            function registerUser() {
+                // Get existing users or initialize
+                let users = JSON.parse(localStorage.getItem('users')) || [];
+                
+                // Check for existing email
+                const emailExists = users.some(user => user.email === emailInput.value);
+                if (emailExists) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'This email is already registered',
+                        icon: 'error'
+                    });
+                    return;
+                }
+
+                // Check for existing username
+                const usernameExists = users.some(user => user.username === usernameInput.value);
+                if (usernameExists) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'This username is already taken',
+                        icon: 'error'
+                    });
+                    return;
+                }
+
+                // Create user object
+                const newUser = {
+                    username: usernameInput.value,
+                    email: emailInput.value,
+                    password: passwordInput.value,
+                    registeredAt: new Date().toISOString()
+                };
+
+                // Add new user and save to localStorage
+                users.push(newUser);
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                // Set as current user
+                localStorage.setItem('currentUser', JSON.stringify(newUser));
+
+                // Show success message
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Registration completed successfully',
+                    icon: 'success',
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    window.location.href = './hello.html';
+                });
+            }
+        });
+    </script>
+</body>
+</html>
